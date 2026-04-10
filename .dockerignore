@@ -1,0 +1,60 @@
+# ==================================================================
+# Docker Build Context Ignore File
+# ==================================================================
+# Reduces Docker context size for faster builds
+
+# Version Control
+.git
+.gitignore
+.github
+.gitlab
+.gitlab-ci.yml
+
+# Documentation
+*.md
+README*
+docs/
+
+# Development Files
+.DS_Store
+**/.DS_Store
+.pytest_cache
+.venv
+.dist
+.env
+.env.*
+.test.env
+Makefile
+
+# Infrastructure & CI/CD
+terraform/
+.gitlab/
+
+# Client Development Files
+client/node_modules
+client/.vite
+client/dist
+node_modules
+
+# Python
+**/__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist/
+build/
+.eggs/
+
+# Testing
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
