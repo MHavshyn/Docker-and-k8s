@@ -23,6 +23,7 @@ import contextvars
 
 
 APP_MESSAGE = os.getenv("APP_MESSAGE", "Welcome to the Course App")
+APP_VERSION = os.getenv("APP_VERSION", "dev")
 SECRET_TOKEN = os.getenv("APP_SECRET_TOKEN", "")
 STORE_BACKEND = os.getenv("APP_STORE", "sqlite").lower()
 DB_PATH = os.getenv("APP_DB_PATH", "data/data.sql")
@@ -31,6 +32,7 @@ MESSAGES_API = os.getenv("APP_MESSAGES_API", "").rstrip("/")
 COUNTER_API = os.getenv("APP_COUNTER_API", "").rstrip("/")
 HOSTNAME = socket.gethostname()
 REQ_ID_CTX: contextvars.ContextVar[str] = contextvars.ContextVar("req_id", default="")
+APP_VERSION = os.getenv("APP_VERSION", "dev")
 
 
 class Store:
@@ -300,6 +302,7 @@ def on_startup():
 def index():
     visits = store.incr_counter("visits", 1)
     hostname = socket.gethostname()
+    theme_class = "theme-v2" if APP_VERSION.startswith("v2") else "theme-v1"
     html = f"""
         <html>
             <head>
@@ -323,6 +326,13 @@ def index():
                         --accent-700:#4b75ea;
                         --ok:#98c379; --warn:#e5c07b; --err:#e06c75;
                         --ring:#9ab6ff;
+                    }}
+
+                    .theme-v2 {{
+                        --accent:#7ad27a;
+                        --accent-600:#5dbd5d;
+                        --accent-700:#4baa4b;
+                        --ring:#9affb6;
                     }}
 
                     * {{ box-sizing: border-box; }}
@@ -411,17 +421,19 @@ def index():
                     a:hover {{ text-decoration: underline; }}
                 </style>
             </head>
-      <body>
+      <body class="{theme_class}">
                 <div class="wrap">
                     <header class="app">
                         <div>
-                            <h1>Docker & Kubernetes Course App</h1>
+                            <h1>Docker & Kubernetes Course App <small style="opacity:.6;font-size:14px;font-weight:500">({APP_VERSION})</small></h1>
                             <p class="lead">{APP_MESSAGE}</p>
                         </div>
                     </header>
                     <div class="pillbar">
+                        <span class="badge">version: {APP_VERSION}</span>
                         <span class="badge">pod: {hostname}</span>
                         <span class="badge">store: {store.name}</span>
+                        <span class="badge">version: {APP_VERSION}</span>
                         <span class="badge">visits: <span id="visits">{visits}</span></span>
                     </div>
 
@@ -566,6 +578,7 @@ def info():
     hostname = socket.gethostname()
     return {
         "app": "course-app",
+        "version": APP_VERSION,
         "hostname": hostname,
         "store": store.name,
         "db_path": DB_PATH,
