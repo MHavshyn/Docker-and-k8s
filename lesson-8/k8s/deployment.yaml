@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: course-app
+  labels:
+    app: course-app
+  annotations:
+    kubernetes.io/change-cause: "initial deploy v1"
+spec:
+  replicas: 10
+  strategy:
+#    type: RollingUpdate
+#    rollingUpdate:
+#      maxUnavailable: 5
+#      maxSurge: 5
+    type: Recreate
+  selector:
+    matchLabels:
+      app: course-app
+  template:
+    metadata:
+      labels:
+        app: course-app
+    spec:
+      containers:
+        - name: course-app
+          image: shoppet/course-app:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: course-app-config
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"
