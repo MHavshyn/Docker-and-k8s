@@ -1,0 +1,82 @@
+replicaCount: 2
+
+image:
+  repository: shoppet/course-app
+  tag: latest
+  pullPolicy: Always
+
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 1
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ingress:
+  className: traefik
+  host: course-app.127.0.0.1.sslip.io
+
+config:
+  APP_MESSAGE: "Hello from Helm chart!"
+  APP_STORE: "redis"
+  APP_VERSION: "v1"
+
+
+appRedis:
+  host: "course-app-redis-master"
+  port: 6379
+  database: 0
+  auth:
+    existingSecret: "course-app-redis"
+    existingSecretPasswordKey: "redis-password"
+
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: true
+    # password: ""  # якщо не задати — bitnami згенерує і покладе у secret course-app-redis
+  master:
+    persistence:
+      enabled: true
+      size: 1Gi
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        cpu: "200m"
+        memory: "256Mi"
+  replica:
+    replicaCount: 0
+
+resources:
+  requests:
+    cpu: "50m"
+    memory: "64Mi"
+  limits:
+    cpu: "300m"
+    memory: "256Mi"
+
+probes:
+  liveness:
+    httpGet:
+      path: /healthz
+      port: 8080
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 2
+    failureThreshold: 3
+  readiness:
+    httpGet:
+      path: /readyz
+      port: 8080
+    initialDelaySeconds: 3
+    periodSeconds: 5
+    timeoutSeconds: 2
+    failureThreshold: 2
+    successThreshold: 1

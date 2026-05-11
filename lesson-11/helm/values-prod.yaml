@@ -1,0 +1,34 @@
+replicaCount: 3
+
+image:
+  repository: shoppet/course-app
+  tag: latest
+
+config:
+  APP_MESSAGE: "Hello from Helm chart with Bitnami Redis SUBCHART!"
+  APP_STORE: "redis"
+  APP_VERSION: "v1.0.0-subchart"
+
+ingress:
+  host: course-app.127.0.0.1.sslip.io
+
+appRedis:
+  host: "course-app-redis-master"
+  port: 6379
+  database: 0
+  auth:
+    enabled: true
+    existingSecret: "course-app-redis"
+    existingSecretPasswordKey: "redis-password"
+
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: true
+  master:
+    persistence:
+      enabled: true
+      size: 1Gi
+  replica:
+    replicaCount: 0
