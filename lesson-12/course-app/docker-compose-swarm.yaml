@@ -1,0 +1,46 @@
+x-healthcheck: &default-healthcheck
+  interval: 10s
+  timeout: 5s
+  retries: 5
+  start_period: 30s
+
+services:
+  course-app:
+    image: shoppet/course-app:latest
+    ports:
+      - target: 8080
+        published: 8080
+        protocol: tcp
+        mode: host
+    environment:
+      APP_STORE: redis
+      APP_REDIS_URL: redis://tasks.dragonfly:6379/0
+    deploy:
+      restart_policy:
+        condition: on-failure
+    healthcheck:
+      <<: *default-healthcheck
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:8080/readyz || exit 1"]
+    volumes:
+      - course_app_data:/appdata
+
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly
+    ports:
+      - target: 6379
+        published: 6379
+        protocol: tcp
+        mode: host
+    deploy:
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - appdata:/data
+    healthcheck:
+      <<: *default-healthcheck
+      test: ["CMD", "redis-cli", "ping"]
+
+
+volumes:
+  course_app_data:
+  appdata:
