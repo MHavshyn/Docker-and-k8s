@@ -27,6 +27,7 @@ spec:
             - configMapRef:
                 name: {{ include "course-app.fullname" . }}-config
           env:
+            {{- if .Values.appRedis.auth.enabled }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -34,6 +35,10 @@ spec:
                   key: {{ .Values.appRedis.auth.existingSecretPasswordKey }}
             - name: APP_REDIS_URL
               value: "redis://:$(REDIS_PASSWORD)@{{ .Values.appRedis.host }}:{{ .Values.appRedis.port }}/{{ .Values.appRedis.database }}"
+            {{- else }}
+            - name: APP_REDIS_URL
+              value: "redis://{{ .Values.appRedis.host }}:{{ .Values.appRedis.port }}/{{ .Values.appRedis.database }}"
+            {{- end }}
           {{- with .Values.probes.liveness }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}

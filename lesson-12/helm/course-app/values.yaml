@@ -26,33 +26,43 @@ config:
   APP_VERSION: "v1"
 
 
+#appRedis:
+#  host: "course-app-redis-master"
+#  port: 6379
+#  database: 0
+#  auth:
+#    existingSecret: "course-app-redis"
+#    existingSecretPasswordKey: "redis-password"
+#
+#redis:
+#  enabled: true
+#  architecture: standalone
+#  auth:
+#    enabled: true
+#    # password: ""  # якщо не задати — bitnami згенерує і покладе у secret course-app-redis
+#  master:
+#    persistence:
+#      enabled: true
+#      size: 1Gi
+#    resources:
+#      requests:
+#        cpu: "50m"
+#        memory: "64Mi"
+#      limits:
+#        cpu: "200m"
+#        memory: "256Mi"
+#  replica:
+#    replicaCount: 0
+
 appRedis:
-  host: "course-app-redis-master"
+  host: "course-app-dragonfly"
   port: 6379
   database: 0
   auth:
-    existingSecret: "course-app-redis"
-    existingSecretPasswordKey: "redis-password"
+    enabled: false
 
 redis:
-  enabled: true
-  architecture: standalone
-  auth:
-    enabled: true
-    # password: ""  # якщо не задати — bitnami згенерує і покладе у secret course-app-redis
-  master:
-    persistence:
-      enabled: true
-      size: 1Gi
-    resources:
-      requests:
-        cpu: "50m"
-        memory: "64Mi"
-      limits:
-        cpu: "200m"
-        memory: "256Mi"
-  replica:
-    replicaCount: 0
+  enabled: false
 
 resources:
   requests:
