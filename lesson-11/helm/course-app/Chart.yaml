@@ -1,0 +1,12 @@
+apiVersion: v2
+name: course-app
+description: Helm chart for FastAPI course-app integrated with Bitnami Redis
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: redis
+    version: "25.5.2"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled

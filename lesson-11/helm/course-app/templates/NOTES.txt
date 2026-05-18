@@ -1,0 +1,15 @@
+1. Application is exposed via Ingress:
+   http://{{ .Values.ingress.host }}
+
+2. Useful endpoints:
+   /            -> web UI
+   /healthz     -> liveness
+   /readyz      -> readiness (checks Redis connectivity)
+   /api/info    -> runtime info (store, version, hostname)
+   /api/messages
+
+3. Check pods:
+   kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }}
+
+4. Verify Redis integration (env injected from Secret '{{ .Values.appRedis.auth.existingSecret }}'):
+   kubectl exec -n {{ .Release.Namespace }} deploy/{{ include "course-app.fullname" . }} -- printenv | grep -E "REDIS|APP_"
