@@ -5,7 +5,7 @@ metadata:
   labels:
     app: course-app
   annotations:
-    kubernetes.io/change-cause: "initial deploy v1"
+    kubernetes.io/change-cause: "probes and ingress"
 spec:
   replicas: 10
   strategy:
@@ -31,6 +31,23 @@ spec:
           envFrom:
             - configMapRef:
                 name: course-app-config
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 2
+            successThreshold: 1
           resources:
             requests:
               cpu: "50m"
